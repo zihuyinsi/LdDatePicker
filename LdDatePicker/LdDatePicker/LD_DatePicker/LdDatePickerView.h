@@ -62,6 +62,12 @@ typedef NS_ENUM(NSInteger, DateMode)
 
 @interface LdDatePickerView : UIView
 
+/** 确认结果 */
+@property (nonatomic, copy) void (^confirmResult)(NSString *beginResultStr, NSString *endResultStr);
+/** 取消结果 */
+@property (nonatomic, copy) void (^cannelResult)(void);
+
+
 /** LdDatePickerView出现样式 */
 @property (nonatomic, assign) ShowType showType;
 /** LdDatePickerView隐藏样式 */
@@ -70,6 +76,12 @@ typedef NS_ENUM(NSInteger, DateMode)
 @property (nonatomic, assign) PickerType pickerType;
 /** 日期格式 */
 @property (nonatomic, assign) DateMode dateMode;
+/** 默认时间 yyyy-MM-dd HH:mm:ss */
+@property (nonatomic, copy) NSString *defaultTime;
+/** 最大时间 yyyy-MM-dd HH:mm:ss */
+@property (nonatomic, copy) NSString *maxTime;
+/** 最小时间 yyyy-MM-dd HH:mm:ss */
+@property (nonatomic, copy) NSString *minTime;
 
 /** 开始标题 */
 @property (nonatomic, copy) NSString *beginTitleStr;

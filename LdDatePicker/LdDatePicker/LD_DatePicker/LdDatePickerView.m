@@ -46,6 +46,9 @@
 /** 数据 */
 - (void) setupDefaultData
 {
+    self.selectBeginStr = @"";
+    self.selectEndStr = @"";
+    
     self.showType = ShowTypeDefault;
     self.dismissType = DismissTypeDefault;
     
@@ -55,6 +58,8 @@
     self.confirmTitleStr = @"确定";
     self.cannelTitleStr = @"取消";
     self.dateMode = DateModeAll;
+    
+    self.defaultTime = [[LdDatePickerManager gainDateFormatterWithDateMode: self.dateMode] stringFromDate: [NSDate date]];
 }
 
 /** 视图 */
@@ -124,11 +129,17 @@
 {
     if (pickerView.tag == 91001)
     {
-        return [self.dataBeginArr[component] count];
+        if (component < [self.dataBeginArr count])
+        {
+            return [self.dataBeginArr[component] count];
+        }
     }
     else if (pickerView.tag == 91002)
     {
-        return [self.dataEndArr[component] count];
+        if (component < [self.dataEndArr count])
+        {
+            return [self.dataEndArr[component] count];
+        }
     }
     
     return 0;
@@ -175,151 +186,86 @@
 /** 选中行 */
 - (void) pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
-    if (self.dateMode == DateModeAll ||
-        self.dateMode == DateModeNoSecond ||
-        self.dateMode == DateModeNoMinute ||
-        self.dateMode == DateModeNoTime)
-    {
-        if (component == 0)
-        {
-            if (pickerView.tag == 91001)
-            {
-                NSString *yearStr = self.dataBeginArr[component][row];
-                NSInteger monthRow = [pickerView selectedRowInComponent: (component+1)];
-                NSString *monthStr = self.dataBeginArr[(component+1)][monthRow];
-                
-                NSArray *dayArr = [LdDatePickerManager gainDayArrWithYear: [yearStr integerValue]
-                                                                    month: [monthStr integerValue]];
-                [self.dataBeginArr replaceObjectAtIndex: (component+2) withObject: dayArr];
-                [pickerView reloadComponent: (component+2)];
-            }
-            else if (pickerView.tag == 91002)
-            {
-                NSString *yearStr = self.dataEndArr[component][row];
-                NSInteger monthRow = [pickerView selectedRowInComponent: (component+1)];
-                NSString *monthStr = self.dataEndArr[(component+1)][monthRow];
-                
-                NSArray *dayArr = [LdDatePickerManager gainDayArrWithYear: [yearStr integerValue]
-                                                                    month: [monthStr integerValue]];
-                [self.dataEndArr replaceObjectAtIndex: (component+2) withObject: dayArr];
-                [pickerView reloadComponent: (component+2)];
-            }
-        }
-        else if (component == 1)
-        {
-            if (pickerView.tag == 91001)
-            {
-                NSString *monthStr = self.dataBeginArr[component][row];
-                NSInteger yearRow = [pickerView selectedRowInComponent: (component-1)];
-                NSString *yearStr = self.dataBeginArr[(component-1)][yearRow];
-                
-                NSArray *dayArr = [LdDatePickerManager gainDayArrWithYear: [yearStr integerValue]
-                                                                    month: [monthStr integerValue]];
-                [self.dataBeginArr replaceObjectAtIndex: (component+1) withObject: dayArr];
-                [pickerView reloadComponent: (component+1)];
-            }
-            else if (pickerView.tag == 91002)
-            {
-                NSString *monthStr = self.dataEndArr[component][row];
-                NSInteger yearRow = [pickerView selectedRowInComponent: (component-1)];
-                NSString *yearStr = self.dataEndArr[(component-1)][yearRow];
-                
-                NSArray *dayArr = [LdDatePickerManager gainDayArrWithYear: [yearStr integerValue]
-                                                                    month: [monthStr integerValue]];
-                [self.dataEndArr replaceObjectAtIndex: (component+1) withObject: dayArr];
-                [pickerView reloadComponent: (component+1)];
-            }
-        }
-    }
-    else if (self.dateMode == DateModeDT_YAll ||
-             self.dateMode == DateModeDT_YNoSecond ||
-             self.dateMode == DateModeDT_YNoMinute ||
-             self.dateMode == DateModeDT_YNoTime)
-    {
-        if (component == 0)
-        {
-            if (pickerView.tag == 91001)
-            {
-                NSInteger year = [NSDate date].dateYear;
-                NSString *monthStr = self.dataBeginArr[component][row];
-                
-                NSArray *dayArr = [LdDatePickerManager gainDayArrWithYear: year
-                                                                    month: [monthStr integerValue]];
-                [self.dataBeginArr replaceObjectAtIndex: (component+1) withObject: dayArr];
-                [pickerView reloadComponent: (component+1)];
-            }
-            else if (pickerView.tag == 91002)
-            {
-                NSInteger year = [NSDate date].dateYear;
-                NSString *monthStr = self.dataEndArr[component][row];
-                
-                NSArray *dayArr = [LdDatePickerManager gainDayArrWithYear: year
-                                                                    month: [monthStr integerValue]];
-                [self.dataEndArr replaceObjectAtIndex: (component+1) withObject: dayArr];
-                [pickerView reloadComponent: (component+1)];
-            }
-        }
-    }
-    
-    //各item标题
-    NSString *pendingStr = @"";
     if (pickerView.tag == 91001)
     {
-        NSInteger numComponent = [LdDatePickerManager numberOfComponentsInPickerView: self.dateMode];
-        for (int i = 0; i < numComponent; i ++)
-        {
-            NSInteger rowInCompoent = [pickerView selectedRowInComponent: i];
-            NSString *tempStr = self.dataBeginArr[i][rowInCompoent];
-            
-            if (i == 0)
-            {
-                pendingStr = tempStr;
-            }
-            else
-            {
-                pendingStr = [pendingStr stringByAppendingFormat: @"-%@", tempStr];
-            }
-        }
+        _selectBeginStr = [LdDatePickerManager pickerView: pickerView
+                                             didSelectRow: row
+                                              inComponent: component
+                                                 dateMode: self.dateMode
+                                                  dataArr: self.dataBeginArr];
     }
     else if (pickerView.tag == 91002)
     {
-        NSInteger numComponent = [LdDatePickerManager numberOfComponentsInPickerView: self.dateMode];
-        for (int i = 0; i < numComponent; i ++)
-        {
-            NSInteger rowInCompoent = [pickerView selectedRowInComponent: i];
-            NSString *tempStr = self.dataEndArr[i][rowInCompoent];
-            
-            if (i == 0)
-            {
-                pendingStr = tempStr;
-            }
-            else
-            {
-                pendingStr = [pendingStr stringByAppendingFormat: @"-%@", tempStr];
-            }
-        }
+        _selectEndStr = [LdDatePickerManager pickerView: pickerView
+                                           didSelectRow: row
+                                            inComponent: component
+                                               dateMode: self.dateMode
+                                                dataArr: self.dataEndArr];
     }
-    NSLog(@"pendingStr = %@", pendingStr);
-    NSString *resultStr = [LdDatePickerManager handleDataStrWithDateMode: self.dateMode
-                                                              pendingStr: pendingStr];
-    NSLog(@"resultStr = %@", resultStr);
 }
 
-///** 改变字体和颜色 */
-//- (UIView *) pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
-//{
-//    return nil;
-//}
+/** 改变字体和颜色 */
+- (UIView *) pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
+{
+    UILabel *pickerLabel = (UILabel*)view;
+    if (!pickerLabel)
+    {
+        pickerLabel = [[UILabel alloc] init];
+        [pickerLabel setTextAlignment: NSTextAlignmentCenter];
+        [pickerLabel setTextColor: [UIColor blackColor]];
+        [pickerLabel setFont: [UIFont systemFontOfSize: 13.f]];
+    }
+    
+    if (pickerView.tag == 91001)
+    {
+        NSString *resultStr = self.dataBeginArr[component][row];
+        pickerLabel.text = resultStr;
+    }
+    else if (pickerView.tag == 91002)
+    {
+        NSString *resultStr = self.dataEndArr[component][row];
+        pickerLabel.text = resultStr;
+    }
+
+    return pickerLabel;
+}
 
 #pragma mark - 确定、取消
 - (void) confirmBtnClick
 {
-    
+    if (self.confirmResult)
+    {
+        if ([LdDatePickerManager isBlankString: _selectBeginStr])
+        {
+            _selectBeginStr = [LdDatePickerManager pickerView: self.beginPicker
+                                                 didSelectRow: 0
+                                                  inComponent: [self.dataBeginArr count]
+                                                     dateMode: self.dateMode
+                                                      dataArr: self.dataBeginArr];
+        }
+        
+        if ([LdDatePickerManager isBlankString: _selectEndStr] &&
+            self.pickerType == PickerTypeBeginEnd)
+        {
+            _selectEndStr = [LdDatePickerManager pickerView: self.endPicker
+                                               didSelectRow: 0
+                                                inComponent: [self.dataEndArr count]
+                                                   dateMode: self.dateMode
+                                                    dataArr: self.dataEndArr];
+        }
+        
+        self.confirmResult(_selectBeginStr, _selectEndStr);
+    }
+    [self dismiss];
 }
 
 - (void) cannelBtnClick
 {
-    
+    if (self.cannelResult)
+    {
+        self.cannelResult();
+    }
+    [self dismiss];
 }
 
 #pragma mark - 隐藏、消失
@@ -361,7 +307,7 @@
                 break;
         }
         
-        [UIView animateWithDuration: .25f
+        [UIView animateWithDuration: 1
                          animations:^{
                              [self setFrame: CGRectMake(dismissX, dismissY, DeviceWidth, DeviceHeight)];
                          }
@@ -391,7 +337,7 @@
     else
     {
         [self setHidden: NO];
-        [UIView animateWithDuration: .25f
+        [UIView animateWithDuration: 1
                          animations:^{
                              [self setFrame: CGRectMake(0, 0, DeviceWidth, DeviceHeight)];
                          }];
@@ -546,6 +492,7 @@
     
     //更新数据
     [self reloadData];
+    [self loadDataWithTime];
 }
 
 /** 日期样式 */
@@ -555,6 +502,63 @@
     
     //更新数据
     [self reloadData];
+    [self loadDataWithTime];
+}
+
+/** 默认时间 */
+- (void) setDefaultTime:(NSString *)defaultTime
+{
+    _defaultTime = defaultTime;
+    
+    [self loadDataWithTime];
+}
+
+/** 最大时间 */
+- (void) setMaxTime:(NSString *)maxTime
+{
+    _maxTime = maxTime;
+    
+    [self loadDataWithTime];
+}
+
+/** 最小时间 */
+- (void) setMinTime:(NSString *)minTime
+{
+    _minTime = minTime;
+    
+    [self loadDataWithTime];
+}
+
+- (void) loadDataWithTime
+{
+    if (self.pickerType == PickerTypeDefault)
+    {
+        //开始选择器
+        [LdDatePickerManager loadPickerDataWithTime: self.defaultTime
+                                            minTime: self.minTime
+                                            maxTime: self.maxTime
+                                           dateMode: self.dateMode
+                                            dataArr: self.dataBeginArr
+                                         pickerView: self.beginPicker];
+    }
+    else if (self.pickerType == PickerTypeBeginEnd)
+    {
+        //开始选择器
+        [LdDatePickerManager loadPickerDataWithTime: self.defaultTime
+                                            minTime: self.minTime
+                                            maxTime: self.maxTime
+                                           dateMode: self.dateMode
+                                            dataArr: self.dataBeginArr
+                                         pickerView: self.beginPicker];
+        
+        //结束选择器
+        [LdDatePickerManager loadPickerDataWithTime: self.defaultTime
+                                            minTime: self.minTime
+                                            maxTime: self.maxTime
+                                           dateMode: self.dateMode
+                                            dataArr: self.dataEndArr
+                                         pickerView: self.endPicker];
+    }
 }
 
 /** 开始标题 */
@@ -643,7 +647,7 @@
     
     if (type == PickerTypeDefault)
     {
-        bgHeight = 150.f;
+        bgHeight = 220.f;
     }
     else if (type == PickerTypeBeginEnd)
     {
