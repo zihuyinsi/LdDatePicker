@@ -244,17 +244,36 @@
                                                       dataArr: self.dataBeginArr];
         }
         
-        if ([LdDatePickerManager isBlankString: _selectEndStr] &&
-            self.pickerType == PickerTypeBeginEnd)
+        if (self.pickerType == PickerTypeBeginEnd)
         {
-            _selectEndStr = [LdDatePickerManager pickerView: self.endPicker
-                                               didSelectRow: 0
-                                                inComponent: [self.dataEndArr count]
-                                                   dateMode: self.dateMode
-                                                    dataArr: self.dataEndArr];
+            if ([LdDatePickerManager isBlankString: _selectEndStr])
+            {
+                _selectEndStr = [LdDatePickerManager pickerView: self.endPicker
+                                                   didSelectRow: 0
+                                                    inComponent: [self.dataEndArr count]
+                                                       dateMode: self.dateMode
+                                                        dataArr: self.dataEndArr];
+            }
+            
+            //比较选择的开始日期是否大于结束日期
+            BOOL result = [LdDatePickerManager confirmFrontCompare: _selectBeginStr
+                                                            endStr: _selectEndStr
+                                                          dateMode: self.dateMode];
+            if (result)
+            {
+                //开始日期大于结束日期，弹框进行提示
+                NSLog(@"开始日期大于结束日期");
+                self.confirmResult(_selectBeginStr, _selectEndStr);
+            }
+            else
+            {
+                self.confirmResult(_selectBeginStr, _selectEndStr);
+            }
         }
-        
-        self.confirmResult(_selectBeginStr, _selectEndStr);
+        else
+        {
+            self.confirmResult(_selectBeginStr, _selectEndStr);
+        }
     }
     [self dismiss];
 }
@@ -307,7 +326,7 @@
                 break;
         }
         
-        [UIView animateWithDuration: 1
+        [UIView animateWithDuration: 0.35
                          animations:^{
                              [self setFrame: CGRectMake(dismissX, dismissY, DeviceWidth, DeviceHeight)];
                          }
@@ -337,7 +356,7 @@
     else
     {
         [self setHidden: NO];
-        [UIView animateWithDuration: 1
+        [UIView animateWithDuration: 0.35
                          animations:^{
                              [self setFrame: CGRectMake(0, 0, DeviceWidth, DeviceHeight)];
                          }];

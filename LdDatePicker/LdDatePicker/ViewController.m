@@ -35,7 +35,7 @@
     _ld_DPView.pickerType = PickerTypeBeginEnd;
     _ld_DPView.minTime = @"2000-12-20 12:24:36";
     _ld_DPView.maxTime = @"2030-12-20 12:23:34";
-    _ld_DPView.defaultTime = @"2012-2-12 13:27:24";
+    _ld_DPView.defaultTime = @"2132-2-12 13:27:24";
     
     _ld_DPView.confirmResult = ^(NSString *beginResultStr, NSString *endResultStr) {
         NSLog(@"beginResultStr = %@", beginResultStr);

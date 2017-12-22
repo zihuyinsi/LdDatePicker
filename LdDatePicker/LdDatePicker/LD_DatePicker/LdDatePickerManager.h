@@ -110,4 +110,25 @@
                         dataArr: (NSMutableArray *)dataArr
                      pickerView: (UIPickerView *)pickerView;
 
+#pragma mark - 时间比较
+/**
+ *  根据需要比较的时间 和最大限定时间以及最小限定时间进行比较，来返回一个相对比较合理的时间
+ *  @param  minTime 最小限定时间
+ *  @param  maxTime 最大限定时间
+ *  @param  defaultTime 需要进行比较的时间
+ */
++ (NSDate *) compareDate: (NSDate *)minTime
+                     max: (NSDate *)maxTime
+             defaultTime: (NSDate *)defaultTime;
+
+/**
+ *  确认提交前 进行日期比较，确保开始日期大于结束日期
+ *  @param  beginStr    开始日期
+ *  @param  endStr      结束日期
+ *  @param  mode        日期格式
+ */
++ (BOOL) confirmFrontCompare: (NSString *)beginStr
+                      endStr: (NSString *)endStr
+                    dateMode: (DateMode)mode;
+
 @end

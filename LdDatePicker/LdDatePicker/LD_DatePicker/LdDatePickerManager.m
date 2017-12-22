@@ -663,7 +663,9 @@
             if (![LdDatePickerManager isBlankString: defaultTime])
             {
                 //设置有默认时间，获取默认时间在picker中位置，设置picker默认值
-                NSDate *date = [LdDatePickerManager defaultDateStr: defaultTime];
+                NSDate *date = [LdDatePickerManager compareDate: [LdDatePickerManager defaultDateStr: minTime]
+                                                            max: [LdDatePickerManager defaultDateStr: maxTime]
+                                                    defaultTime: [LdDatePickerManager defaultDateStr: defaultTime]];
                 for (int i = 0; i < 6; i ++)
                 {
                     if (i < [dataArr count])
@@ -695,7 +697,16 @@
                         }
                         
                         NSArray *arr = dataArr[i];
-                        NSInteger row = [arr indexOfObject: str];
+                        
+                        NSInteger row = 0;
+                        if ([arr containsObject: str])
+                        {
+                            row = [arr indexOfObject: str];
+                        }
+                        else
+                        {
+                            row = 0;
+                        }
                         [pickerView selectRow: row inComponent: i animated: NO];
                     }
                 }
@@ -713,7 +724,9 @@
             if (![LdDatePickerManager isBlankString: defaultTime])
             {
                 //设置有默认时间，获取默认时间在picker中位置，设置picker默认值
-                NSDate *date = [LdDatePickerManager defaultDateStr: defaultTime];
+                NSDate *date = [LdDatePickerManager compareDate: [LdDatePickerManager defaultDateStr: minTime]
+                                                            max: [LdDatePickerManager defaultDateStr: maxTime]
+                                                    defaultTime: [LdDatePickerManager defaultDateStr: defaultTime]];
                 for (int i = 0; i < 5; i ++)
                 {
                     if (i < [dataArr count])
@@ -741,7 +754,15 @@
                         }
                         
                         NSArray *arr = dataArr[i];
-                        NSInteger row = [arr indexOfObject: str];
+                        NSInteger row = 0;
+                        if ([arr containsObject: str])
+                        {
+                            row = [arr indexOfObject: str];
+                        }
+                        else
+                        {
+                            row = 0;
+                        }
                         [pickerView selectRow: row inComponent: i animated: NO];
                     }
                 }
@@ -777,7 +798,15 @@
                         }
                         
                         NSArray *arr = dataArr[i];
-                        NSInteger row = [arr indexOfObject: str];
+                        NSInteger row = 0;
+                        if ([arr containsObject: str])
+                        {
+                            row = [arr indexOfObject: str];
+                        }
+                        else
+                        {
+                            row = 0;
+                        }
                         [pickerView selectRow: row inComponent: i animated: NO];
                     }
                 }
@@ -787,6 +816,74 @@
             
         default:
             break;
+    }
+}
+
+#pragma mark - 时间比较
+/**
+ *  根据需要比较的时间 和最大限定时间以及最小限定时间进行比较，来返回一个相对比较合理的时间
+ *  @param  minTime 最小限定时间
+ *  @param  maxTime 最大限定时间
+ *  @param  defaultTime 需要进行比较的时间
+ */
++ (NSDate *) compareDate: (NSDate *)minTime
+                     max: (NSDate *)maxTime
+             defaultTime: (NSDate *)defaultTime
+{
+    //默认选择时间和最小时间比较
+    NSComparisonResult result = [defaultTime compare: minTime];
+    if (result == NSOrderedDescending)
+    {
+        //大于最小时间,和最大时间比较
+        NSComparisonResult result2 = [defaultTime compare: maxTime];
+        if (result2 == NSOrderedDescending)
+        {
+            //大于最大时间，取最大时间
+            return maxTime;
+        }
+        else
+        {
+            //小于、等于 最大时间，直接返回
+            return defaultTime;
+        }
+    }
+    else if (result == NSOrderedAscending)
+    {
+        //小于最小时间,取最小时间
+        return minTime;
+    }
+    else
+    {
+        //等于最小时间，直接返回
+        return defaultTime;
+    }
+}
+
+/**
+ *  确认提交前 进行日期比较，确保开始日期大于结束日期
+ *  @param  beginStr    开始日期
+ *  @param  endStr      结束日期
+ *  @param  mode        日期格式
+ */
++ (BOOL) confirmFrontCompare: (NSString *)beginStr
+                      endStr: (NSString *)endStr
+                    dateMode: (DateMode)mode
+{
+    NSDateFormatter *dateFormatter = [LdDatePickerManager gainDateFormatterWithDateMode: mode];
+    NSDate *beginDate = [dateFormatter dateFromString: beginStr];
+    NSDate *endDate = [dateFormatter dateFromString: endStr];
+    NSComparisonResult result = [beginDate compare: endDate];
+    if (result == NSOrderedAscending)
+    {
+        return NO;
+    }
+    else if (result == NSOrderedSame)
+    {
+        return NO;
+    }
+    else
+    {
+        return YES;
     }
 }
 
