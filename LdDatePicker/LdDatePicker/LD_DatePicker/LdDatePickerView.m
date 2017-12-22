@@ -11,6 +11,8 @@
 #import "LdDatePickerManager.h"
 #import "NSDate+Attribute.h"
 
+#define k_SupViewMargin 30.f
+
 @interface LdDatePickerView()<UIPickerViewDelegate, UIPickerViewDataSource>
 
 @property (nonatomic, strong) UIView *ldPickerViewBackground;   // 整个日期选择器背景
@@ -155,7 +157,7 @@
 - (CGFloat) pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
 {
     NSInteger num = [LdDatePickerManager numberOfComponentsInPickerView: self.dateMode];
-    CGFloat rowWidth = (DeviceWidth - 70 - 8*(num-1))/num;
+    CGFloat rowWidth = (DeviceWidth - k_SupViewMargin*2-10.f - 8*(num-1))/num;
     if ((rowWidth - 80.f) > 0.f)
     {
         rowWidth = 80.f;
@@ -371,7 +373,7 @@
     {
         _ldPickerViewBackground = [[UIView alloc] init];
         [_ldPickerViewBackground setBackgroundColor: [UIColor whiteColor]];
-        [_ldPickerViewBackground setFrame: CGRectMake(30.f, (DeviceHeight - 150.f)/2, DeviceWidth - 60.f, 150.f)];
+        [_ldPickerViewBackground setFrame: CGRectMake(k_SupViewMargin, (DeviceHeight - 150.f)/2, DeviceWidth - k_SupViewMargin*2, 150.f)];
     }
     
     return _ldPickerViewBackground;
@@ -674,9 +676,9 @@
         [self initializationEndPickerView];
     }
     
-    [self.ldPickerViewBackground setFrame: CGRectMake(30.f,
+    [self.ldPickerViewBackground setFrame: CGRectMake(k_SupViewMargin,
                                                       (DeviceHeight - bgHeight)/2,
-                                                      DeviceWidth - 60.f,
+                                                      DeviceWidth - k_SupViewMargin*2,
                                                       bgHeight)];
 
     //开始标题
