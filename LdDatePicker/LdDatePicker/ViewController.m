@@ -33,7 +33,7 @@
     _ld_DPView.showType = ShowTypeDown_Up;
     _ld_DPView.dismissType = DismissTypeRight_Left;
     _ld_DPView.pickerType = PickerTypeBeginEnd;
-    _ld_DPView.dateMode = DateModeTimeAll;
+    _ld_DPView.dateMode = DateModeNoDay;
     
     _ld_DPView.minTime = @"2000-12-20 12:24:36";
     _ld_DPView.maxTime = @"2030-12-20 12:23:34";

@@ -11,7 +11,7 @@
 #import "LdDatePickerManager.h"
 #import "NSDate+Attribute.h"
 
-#define k_SupViewMargin 30.f
+#define k_SupViewMargin 60.f
 
 @interface LdDatePickerView()<UIPickerViewDelegate, UIPickerViewDataSource>
 
