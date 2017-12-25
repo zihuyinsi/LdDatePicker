@@ -66,6 +66,8 @@
  *  @param  mode        日期格式
  */
 + (NSMutableArray *) presetDataWithMode: (DateMode)mode;
++ (NSMutableArray *) presetDataWithMode: (DateMode)mode
+                              isShow24H: (BOOL)isShow;
 
 #pragma mark - 年月日时分秒
 /**

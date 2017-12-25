@@ -550,6 +550,13 @@
     [self loadDataWithTime];
 }
 
+/** 是否需要显示 24点 只能在DateModeNoMinute/DateModeDT_YNoMinute情况下使用 */
+- (void) setIsShow24:(BOOL)isShow24
+{
+    _isShow24 = isShow24;
+    [self reloadData];
+}
+
 - (void) loadDataWithTime
 {
     if (self.pickerType == PickerTypeDefault)
@@ -615,14 +622,32 @@
 {
     //开始选择器 数据
     [self.dataBeginArr removeAllObjects];
-    [self.dataBeginArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode]];
+    if (self.dateMode == DateModeNoMinute ||
+        self.dateMode == DateModeDT_YNoMinute)
+    {
+        [self.dataBeginArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode
+                                                                              isShow24H: self.isShow24]];
+    }
+    else
+    {
+        [self.dataBeginArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode]];
+    }
     [self.beginPicker reloadAllComponents];
     
     if (self.pickerType == PickerTypeBeginEnd)
     {
         //结束选择器
         [self.dataEndArr removeAllObjects];
-        [self.dataEndArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode]];
+        if (self.dateMode == DateModeNoMinute ||
+            self.dateMode == DateModeDT_YNoMinute)
+        {
+            [self.dataEndArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode
+                                                                                isShow24H: self.isShow24]];
+        }
+        else
+        {
+            [self.dataEndArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode]];
+        }
         [self.endPicker reloadAllComponents];
     }
 }

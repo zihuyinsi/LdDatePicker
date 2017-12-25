@@ -243,8 +243,26 @@
         }
     }
     NSLog(@"pendingStr = %@", pendingStr);
-    NSString *resultStr = [LdDatePickerManager handleDataStrWithDateMode: mode
-                                                              pendingStr: pendingStr];
+    NSString *resultStr = @"";
+    if (mode == DateModeNoMinute ||
+        mode == DateModeDT_YNoMinute)
+    {
+        if ([pendingStr hasSuffix: @"-24"])
+        {
+            resultStr = [pendingStr stringByReplacingCharactersInRange: NSMakeRange([pendingStr length]-3, 1)
+                                                            withString: @" "];
+        }
+        else
+        {
+            resultStr = [LdDatePickerManager handleDataStrWithDateMode: mode
+                                                            pendingStr: pendingStr];
+        }
+    }
+    else
+    {
+        resultStr = [LdDatePickerManager handleDataStrWithDateMode: mode
+                                                        pendingStr: pendingStr];
+    }
     NSLog(@"resultStr = %@", resultStr);
 
     return resultStr;
@@ -279,6 +297,11 @@
  */
 + (NSMutableArray *) presetDataWithMode: (DateMode)mode
 {
+    return [LdDatePickerManager presetDataWithMode: mode isShow24H: NO];
+}
++ (NSMutableArray *) presetDataWithMode: (DateMode)mode
+                              isShow24H: (BOOL)isShow
+{
     NSDate *date = [NSDate date];
     NSInteger year = date.dateYear;
     NSInteger month = date.dateMonth;
@@ -295,11 +318,11 @@
             [dataArr addObject: [LdDatePickerManager gainHourArr]];
             [dataArr addObject: [LdDatePickerManager gainMinuteArr]];
             [dataArr addObject: [LdDatePickerManager gainSecondArr]];
-
+            
             break;
             
         case DateModeNoSecond:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainYearArrWithCurrentYear: year]];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
@@ -315,12 +338,12 @@
             [dataArr addObject: [LdDatePickerManager gainYearArrWithCurrentYear: year]];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
             [dataArr addObject: [LdDatePickerManager gainDayArrWithYear: year month: month]];
-            [dataArr addObject: [LdDatePickerManager gainHourArr]];
+            [dataArr addObject: [LdDatePickerManager gainHourArrIsShow24H: isShow]];
             
             break;
             
         case DateModeNoTime:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainYearArrWithCurrentYear: year]];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
@@ -329,7 +352,7 @@
             break;
             
         case DateModeNoDay:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainYearArrWithCurrentYear: year]];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
@@ -348,7 +371,7 @@
             break;
             
         case DateModeDT_YNoSecond:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
             [dataArr addObject: [LdDatePickerManager gainDayArrWithYear: year month: month]];
@@ -358,16 +381,16 @@
             break;
             
         case DateModeDT_YNoMinute:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
             [dataArr addObject: [LdDatePickerManager gainDayArrWithYear: year month: month]];
-            [dataArr addObject: [LdDatePickerManager gainHourArr]];
+            [dataArr addObject: [LdDatePickerManager gainHourArrIsShow24H: isShow]];
             
             break;
             
         case DateModeDT_YNoTime:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
             [dataArr addObject: [LdDatePickerManager gainDayArrWithYear: year month: month]];
@@ -375,7 +398,7 @@
             break;
             
         case DateModeTimeAll:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainHourArr]];
             [dataArr addObject: [LdDatePickerManager gainMinuteArr]];
@@ -384,7 +407,7 @@
             break;
             
         case DateModeTimeNoSecond:
-
+            
             [dataArr removeAllObjects];
             [dataArr addObject: [LdDatePickerManager gainHourArr]];
             [dataArr addObject: [LdDatePickerManager gainMinuteArr]];
@@ -406,6 +429,7 @@
     
     return dataArr;
 }
+
 
 #pragma mark - 年月日时分秒
 /**
@@ -512,8 +536,18 @@
  */
 + (NSArray *)gainHourArr
 {
+    return [LdDatePickerManager gainHourArrIsShow24H: NO];
+}
++ (NSArray *)gainHourArrIsShow24H: (BOOL)isShow
+{
     NSMutableArray *hourArr = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 24; i ++)
+    int hourNum = 24;
+    if (isShow)
+    {
+        hourNum = 25;
+    }
+    
+    for (int i = 0; i < hourNum; i ++)
     {
         [hourArr addObject: [NSString stringWithFormat: @"%02d", i]];
     }
@@ -871,6 +905,18 @@
 {
     NSDateFormatter *dateFormatter = [LdDatePickerManager gainDateFormatterWithDateMode: mode];
     NSDate *beginDate = [dateFormatter dateFromString: beginStr];
+    if (mode == DateModeNoMinute ||
+        mode == DateModeDT_YNoMinute)
+    {
+        if ([beginStr hasSuffix: @" 24"])
+        {
+            beginStr = [beginStr stringByReplacingCharactersInRange: NSMakeRange([beginStr length] - 1, 1)
+                                                         withString: @"3:59:59"];
+            NSDateFormatter *tempDateFormatter = [LdDatePickerManager gainDateFormatterWithDateMode: DateModeAll];
+            beginDate = [tempDateFormatter dateFromString: beginStr];
+        }
+    }
+
     NSDate *endDate = [dateFormatter dateFromString: endStr];
     NSComparisonResult result = [beginDate compare: endDate];
     if (result == NSOrderedAscending)

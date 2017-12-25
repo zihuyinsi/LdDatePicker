@@ -82,6 +82,8 @@ typedef NS_ENUM(NSInteger, DateMode)
 @property (nonatomic, copy) NSString *maxTime;
 /** 最小时间 yyyy-MM-dd HH:mm:ss */
 @property (nonatomic, copy) NSString *minTime;
+/** 是否需要显示 24点 只能在DateModeNoMinute/DateModeDT_YNoMinute情况下使用 */
+@property (nonatomic, assign) BOOL isShow24;
 
 /** 开始标题 */
 @property (nonatomic, copy) NSString *beginTitleStr;
