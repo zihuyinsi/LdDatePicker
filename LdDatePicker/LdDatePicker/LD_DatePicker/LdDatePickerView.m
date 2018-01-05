@@ -11,7 +11,15 @@
 #import "LdDatePickerManager.h"
 #import "NSDate+Attribute.h"
 
-#define k_SupViewMargin 60.f
+#define k_SupViewLRMargin 30.f
+#define k_SupViewTBMargin 64.f
+#define k_TitleHeight 20.f
+#define k_OnePickerHeight 200.f
+#define k_ButtonHeight 50.f
+#define k_PickerItemHeight 45.f
+#define k_PickerLineMargin 10.f
+#define k_PickerLRMargin 15.f
+#define k_TitleTopMargin 15.f
 
 @interface LdDatePickerView()<UIPickerViewDelegate, UIPickerViewDataSource>
 
@@ -29,6 +37,11 @@
 @property (nonatomic, copy) NSString *selectBeginStr;           // 开始选中
 @property (nonatomic, copy) NSString *selectEndStr;             // 结束选中
 
+/** 开始选择器分割线 */
+@property (nonatomic, strong) UIView *beginLineView;
+/** 结束选择器分割线 */
+@property (nonatomic, strong) UIView *endLineView;
+
 @end
 
 @implementation LdDatePickerView
@@ -40,6 +53,7 @@
     {
         [self initializationDatePickerView];
         [self setupDefaultData];
+        
     }
     
     return self;
@@ -95,8 +109,10 @@
 
     //开始选择器
     [self.ldPickerViewBackground addSubview: self.beginPicker];
+    
+    //添加分割线
+    [self.ldPickerViewBackground addSubview: self.beginLineView];
 }
-
 
 - (void) initializationEndPickerView
 {
@@ -106,6 +122,38 @@
 
     //结束选择器
     [self.ldPickerViewBackground addSubview: self.endPicker];
+    
+    //添加分割线
+    [self.ldPickerViewBackground addSubview: self.endLineView];
+}
+
+#pragma mark ********* 选中 *********
+- (void) loadCustomSelectLineAtLineView: (UIView *)lineView
+{
+    for (UIView *tempView in [lineView subviews])
+    {
+        [tempView removeFromSuperview];
+    }
+    
+    NSInteger count = [LdDatePickerManager numberOfComponentsInPickerView: self.dateMode];
+    CGFloat rowWidth = CGRectGetWidth(lineView.frame)/count;
+    NSInteger height = 2.f;//设置view的高度
+    CGFloat itemH = CGRectGetHeight(lineView.frame);
+    
+    for (int i = 0; i < 2; i ++)
+    {
+        for (int j = 0; j < count; j++)
+        {
+            UILabel * line = [[UILabel alloc] initWithFrame: CGRectMake(k_PickerLineMargin/2 + j * rowWidth,
+                                                                        i * (itemH - height),
+                                                                        rowWidth - k_PickerLineMargin,
+                                                                        height)];
+            [line setBackgroundColor: [UIColor colorWithRed: 1.f green: 96/255.f blue: 0.f alpha: 1.f]];
+            line.layer.masksToBounds = YES;
+            line.layer.cornerRadius = 1.f;
+            [lineView addSubview: line];
+        }
+    }
 }
 
 #pragma mark - UIPickerViewDelegate / UIPickerViewDataSource
@@ -150,14 +198,14 @@
 /** 高度 */
 - (CGFloat) pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
 {
-    return 30.f;
+    return k_PickerItemHeight;
 }
 
 /** 每个item宽度 */
 - (CGFloat) pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
 {
     NSInteger num = [LdDatePickerManager numberOfComponentsInPickerView: self.dateMode];
-    CGFloat rowWidth = (DeviceWidth - k_SupViewMargin*2-10.f - 8*(num-1))/num;
+    CGFloat rowWidth = (DeviceWidth - k_SupViewLRMargin*2 - k_PickerLRMargin * 2 - 6*(num - 1))/num;
     if ((rowWidth - 80.f) > 0.f)
     {
         rowWidth = 80.f;
@@ -209,13 +257,21 @@
 /** 改变字体和颜色 */
 - (UIView *) pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
 {
+    for (UIView *tempview in pickerView.subviews)
+    {
+        if (tempview.frame.size.height < 1)
+        {
+            [tempview setBackgroundColor: [UIColor clearColor]];
+        }
+    }
+    
     UILabel *pickerLabel = (UILabel*)view;
     if (!pickerLabel)
     {
         pickerLabel = [[UILabel alloc] init];
         [pickerLabel setTextAlignment: NSTextAlignmentCenter];
         [pickerLabel setTextColor: [UIColor blackColor]];
-        [pickerLabel setFont: [UIFont systemFontOfSize: 13.f]];
+        [pickerLabel setFont: [UIFont systemFontOfSize: 18.f]];
     }
     
     if (pickerView.tag == 91001)
@@ -373,7 +429,7 @@
     {
         _ldPickerViewBackground = [[UIView alloc] init];
         [_ldPickerViewBackground setBackgroundColor: [UIColor whiteColor]];
-        [_ldPickerViewBackground setFrame: CGRectMake(k_SupViewMargin, (DeviceHeight - 150.f)/2, DeviceWidth - k_SupViewMargin*2, 150.f)];
+        [_ldPickerViewBackground setFrame: CGRectMake(k_SupViewLRMargin, (DeviceHeight - k_OnePickerHeight)/2, DeviceWidth - k_SupViewLRMargin*2, k_OnePickerHeight)];
     }
     
     return _ldPickerViewBackground;
@@ -469,6 +525,30 @@
     return _endPicker;
 }
 
+/** 开始分割线 */
+- (UIView *) beginLineView
+{
+    if (_beginLineView == nil)
+    {
+        _beginLineView = [[UIView alloc] init];
+        [_beginLineView setBackgroundColor: [UIColor clearColor]];
+    }
+    
+    return _beginLineView;
+}
+
+/** 结束分割线 */
+- (UIView *) endLineView
+{
+    if (_endLineView == nil)
+    {
+        _endLineView = [[UIView alloc] init];
+        [_endLineView setBackgroundColor: [UIColor clearColor]];
+    }
+    
+    return _endLineView;
+}
+
 /** 开始选择器数据 */
 - (NSMutableArray *) dataBeginArr
 {
@@ -550,7 +630,7 @@
     [self loadDataWithTime];
 }
 
-/** 是否需要显示 24点 只能在DateModeNoMinute/DateModeDT_YNoMinute情况下使用 */
+/** 是否需要显示 24点 只能在DateModeNoMinute/DateModeNoMinuteFake/DateModeDT_YNoMinute情况下使用 */
 - (void) setIsShow24:(BOOL)isShow24
 {
     _isShow24 = isShow24;
@@ -623,6 +703,7 @@
     //开始选择器 数据
     [self.dataBeginArr removeAllObjects];
     if (self.dateMode == DateModeNoMinute ||
+        self.dateMode == DateModeNoMinuteFake ||
         self.dateMode == DateModeDT_YNoMinute)
     {
         [self.dataBeginArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode
@@ -633,12 +714,14 @@
         [self.dataBeginArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode]];
     }
     [self.beginPicker reloadAllComponents];
-    
+    [self loadCustomSelectLineAtLineView: self.beginLineView];
+
     if (self.pickerType == PickerTypeBeginEnd)
     {
         //结束选择器
         [self.dataEndArr removeAllObjects];
         if (self.dateMode == DateModeNoMinute ||
+            self.dateMode == DateModeNoMinuteFake ||
             self.dateMode == DateModeDT_YNoMinute)
         {
             [self.dataEndArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode
@@ -649,6 +732,7 @@
             [self.dataEndArr addObjectsFromArray: [LdDatePickerManager presetDataWithMode: self.dateMode]];
         }
         [self.endPicker reloadAllComponents];
+        [self loadCustomSelectLineAtLineView: self.endLineView];
     }
 }
 
@@ -693,68 +777,82 @@
     
     if (type == PickerTypeDefault)
     {
-        bgHeight = 220.f;
+        bgHeight = k_OnePickerHeight + k_ButtonHeight + k_TitleHeight + k_TitleTopMargin;
     }
     else if (type == PickerTypeBeginEnd)
     {
-        bgHeight = 410;
+        bgHeight = DeviceHeight - k_SupViewTBMargin * 2;
         [self initializationEndPickerView];
     }
     
-    [self.ldPickerViewBackground setFrame: CGRectMake(k_SupViewMargin,
+    [self.ldPickerViewBackground setFrame: CGRectMake(k_SupViewLRMargin,
                                                       (DeviceHeight - bgHeight)/2,
-                                                      DeviceWidth - k_SupViewMargin*2,
+                                                      DeviceWidth - k_SupViewLRMargin*2,
                                                       bgHeight)];
 
     //开始标题
     [self.beginTitleLabel setFrame: CGRectMake(0,
-                                               5,
+                                               k_TitleTopMargin,
                                                CGRectGetWidth(self.ldPickerViewBackground.frame),
-                                               20.f)];
+                                               k_TitleHeight)];
 
     if (type == PickerTypeDefault)
     {
         //开始日期选择器
-        [self.beginPicker setFrame: CGRectMake(5.f,
-                                               CGRectGetMaxY(self.beginTitleLabel.frame),
-                                               CGRectGetWidth(self.ldPickerViewBackground.frame) - 10.f,
-                                               CGRectGetHeight(self.ldPickerViewBackground.frame) - 75.f)];
+        [self.beginPicker setFrame: CGRectMake(k_PickerLRMargin,
+                                               k_TitleTopMargin + k_TitleHeight,
+                                               CGRectGetWidth(self.ldPickerViewBackground.frame) - k_PickerLRMargin * 2,
+                                               k_OnePickerHeight)];
+        //分线
+        [self.beginLineView setFrame: CGRectMake(k_PickerLRMargin,
+                                                 k_TitleTopMargin + k_TitleHeight + (k_OnePickerHeight - (k_PickerItemHeight+2))/2,
+                                                 CGRectGetWidth(self.ldPickerViewBackground.frame) - k_PickerLRMargin * 2,
+                                                 (k_PickerItemHeight+2))];
     }
     else if (type == PickerTypeBeginEnd)
     {
         [self initializationEndPickerView];
 
         //开始日期选择器
-        [self.beginPicker setFrame: CGRectMake(5.f,
-                                               CGRectGetMaxY(self.beginTitleLabel.frame),
-                                               CGRectGetWidth(self.ldPickerViewBackground.frame) - 10.f,
-                                               (CGRectGetHeight(self.ldPickerViewBackground.frame) - 110)/2)];
-
+        [self.beginPicker setFrame: CGRectMake(k_PickerLRMargin,
+                                               k_TitleTopMargin + k_TitleHeight,
+                                               CGRectGetWidth(self.ldPickerViewBackground.frame) - k_PickerLRMargin * 2,
+                                               (CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight - k_TitleHeight * 2 - k_TitleTopMargin * 2)/2)];
+        //分线
+        [self.beginLineView setFrame: CGRectMake(k_PickerLRMargin,
+                                                 k_TitleTopMargin + k_TitleHeight + (CGRectGetHeight(self.beginPicker.frame) - (k_PickerItemHeight+2))/2,
+                                                 CGRectGetWidth(self.ldPickerViewBackground.frame) - k_PickerLRMargin * 2,
+                                                 (k_PickerItemHeight+2))];
 
         //结束标题
         [self.endTitleLabel setFrame: CGRectMake(0,
-                                                 CGRectGetMaxY(self.beginPicker.frame) + 15.f,
+                                                 CGRectGetMaxY(self.beginPicker.frame) + k_TitleTopMargin,
                                                  CGRectGetWidth(self.ldPickerViewBackground.frame),
-                                                 20.f)];
+                                                 k_TitleHeight)];
 
         //结束日期选择器
-        [self.endPicker setFrame: CGRectMake(5.f,
+        [self.endPicker setFrame: CGRectMake(k_PickerLRMargin,
                                              CGRectGetMaxY(self.endTitleLabel.frame),
-                                             CGRectGetWidth(self.ldPickerViewBackground.frame) - 10.f,
-                                             (CGRectGetHeight(self.ldPickerViewBackground.frame) - 110)/2)];
+                                             CGRectGetWidth(self.ldPickerViewBackground.frame) - k_PickerLRMargin * 2,
+                                             (CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight - k_TitleHeight * 2 - k_TitleTopMargin * 2)/2)];
+        //分线
+        [self.endLineView setFrame: CGRectMake(k_PickerLRMargin,
+                                                 CGRectGetMaxY(self.endTitleLabel.frame) + (CGRectGetHeight(self.endPicker.frame) - (k_PickerItemHeight+2))/2,
+                                                 CGRectGetWidth(self.ldPickerViewBackground.frame) - k_PickerLRMargin * 2,
+                                                 (k_PickerItemHeight+2))];
     }
 
     //确认选择按钮
     [self.confirmBtn setFrame: CGRectMake(0,
-                                          CGRectGetHeight(self.ldPickerViewBackground.frame) - 40.f,
+                                          CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
                                           CGRectGetWidth(self.ldPickerViewBackground.frame) / 2.f,
-                                          40.f)];
+                                          k_ButtonHeight)];
 
     //取消选择按钮
     [self.cannelBtn setFrame: CGRectMake(CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
-                                         CGRectGetHeight(self.ldPickerViewBackground.frame) - 40.f,
+                                         CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
                                          CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
-                                         40.f)];
+                                         k_ButtonHeight)];
 }
 
 @end

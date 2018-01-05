@@ -33,11 +33,13 @@
     _ld_DPView.showType = ShowTypeDown_Up;
     _ld_DPView.dismissType = DismissTypeRight_Left;
     _ld_DPView.pickerType = PickerTypeBeginEnd;
-    _ld_DPView.dateMode = DateModeNoMinute;
+    _ld_DPView.dateMode = DateModeNoMinuteFake;
 //    _ld_DPView.isShow24 = YES;
     _ld_DPView.minTime = @"2000-12-20 12:24:36";
     _ld_DPView.maxTime = @"2030-12-20 12:23:34";
-    _ld_DPView.defaultTime = @"2132-2-12 13:27:24";
+    _ld_DPView.defaultTime = @"2012-2-12 13:27:24";
+    _ld_DPView.beginTitleStr = @"开始日期";
+    _ld_DPView.endTitleStr = @"结束日期";
     
     _ld_DPView.confirmResult = ^(NSString *beginResultStr, NSString *endResultStr) {
         NSLog(@"beginResultStr = %@", beginResultStr);

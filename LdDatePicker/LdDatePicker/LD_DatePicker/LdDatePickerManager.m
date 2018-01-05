@@ -59,6 +59,10 @@
             dateFormatterStr = @"yyyy-MM-dd HH";
             break;
             
+        case DateModeNoMinuteFake:
+            dateFormatterStr = @"yyyy-MM-dd HH:mm";
+            break;
+            
         case DateModeNoTime:
             dateFormatterStr = @"yyyy-MM-dd";
             break;
@@ -144,6 +148,7 @@
             break;
             
         case DateModeNoMinute:
+        case DateModeNoMinuteFake:
         case DateModeDT_YNoSecond:
             components = 4;
             break;
@@ -183,6 +188,7 @@
     if (mode == DateModeAll ||
         mode == DateModeNoSecond ||
         mode == DateModeNoMinute ||
+        mode == DateModeNoMinuteFake ||
         mode == DateModeNoTime)
     {
         if (component == 0)
@@ -339,6 +345,16 @@
             [dataArr addObject: [LdDatePickerManager gainMonthArr]];
             [dataArr addObject: [LdDatePickerManager gainDayArrWithYear: year month: month]];
             [dataArr addObject: [LdDatePickerManager gainHourArrIsShow24H: isShow]];
+            
+            break;
+            
+        case DateModeNoMinuteFake:
+            
+            [dataArr removeAllObjects];
+            [dataArr addObject: [LdDatePickerManager gainYearArrWithCurrentYear: year]];
+            [dataArr addObject: [LdDatePickerManager gainMonthArr]];
+            [dataArr addObject: [LdDatePickerManager gainDayArrWithYear: year month: month]];
+            [dataArr addObject: [LdDatePickerManager gainHourArrFakeIsShow24H: isShow]];
             
             break;
             
@@ -555,6 +571,23 @@
     NSArray *resultArr = [NSArray arrayWithArray: hourArr];
     return resultArr;
 }
++ (NSArray *)gainHourArrFakeIsShow24H: (BOOL) isShow
+{
+    NSMutableArray *hourArr = [[NSMutableArray alloc] init];
+    int hourNum = 24;
+    if (isShow)
+    {
+        hourNum = 25;
+    }
+    
+    for (int i = 0; i < hourNum; i ++)
+    {
+        [hourArr addObject: [NSString stringWithFormat: @"%02d:00", i]];
+    }
+    
+    NSArray *resultArr = [NSArray arrayWithArray: hourArr];
+    return resultArr;
+}
 
 /**
  *  分 一小时60分钟
@@ -599,6 +632,7 @@
         case DateModeAll:
         case DateModeNoSecond:
         case DateModeNoMinute:
+        case DateModeNoMinuteFake:
         case DateModeNoTime:
         case DateModeNoDay:
         {
@@ -719,7 +753,14 @@
                         }
                         else if (i == 3)
                         {
-                            str = [NSString stringWithFormat: @"%02ld", (long)date.dateHour];
+                            if (dateMode == DateModeNoMinuteFake)
+                            {
+                                str = [NSString stringWithFormat: @"%02ld:00", (long)date.dateHour];
+                            }
+                            else
+                            {
+                                str = [NSString stringWithFormat: @"%02ld", (long)date.dateHour];
+                            }
                         }
                         else if (i == 4)
                         {
@@ -906,6 +947,7 @@
     NSDateFormatter *dateFormatter = [LdDatePickerManager gainDateFormatterWithDateMode: mode];
     NSDate *beginDate = [dateFormatter dateFromString: beginStr];
     if (mode == DateModeNoMinute ||
+        mode == DateModeNoMinuteFake ||
         mode == DateModeDT_YNoMinute)
     {
         if ([beginStr hasSuffix: @" 24"])

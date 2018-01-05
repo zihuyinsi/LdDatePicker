@@ -49,6 +49,7 @@ typedef NS_ENUM(NSInteger, DateMode)
     DateModeAll = 0,            //2017-12-20 14:12:13
     DateModeNoSecond,           //2017-12-20 14:12
     DateModeNoMinute,           //2017-12-20 14
+    DateModeNoMinuteFake,       //2017-12-20 14:00
     DateModeNoTime,             //2017-12-20
     DateModeNoDay,              //2017-12
     DateModeDT_YAll,            //12-20 14:12:13
@@ -84,6 +85,10 @@ typedef NS_ENUM(NSInteger, DateMode)
 @property (nonatomic, copy) NSString *minTime;
 /** 是否需要显示 24点 只能在DateModeNoMinute/DateModeDT_YNoMinute情况下使用 */
 @property (nonatomic, assign) BOOL isShow24;
+///** 字体大小 */
+//@property (nonatomic, assign) NSInteger fontSize;
+///** 文字颜色 */
+//@property (nonatomic, strong) UIColor *titleColor;
 
 /** 开始标题 */
 @property (nonatomic, copy) NSString *beginTitleStr;
