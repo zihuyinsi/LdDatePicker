@@ -28,6 +28,8 @@
 @property (nonatomic, strong) UILabel *endTitleLabel;           // 结束日期选择器标题
 @property (nonatomic, strong) UIButton *confirmBtn;             // 确定选择按钮
 @property (nonatomic, strong) UIButton *cannelBtn;              // 取消选择按钮
+@property (nonatomic, strong) UILabel *line1;                   //按钮分割线
+@property (nonatomic, strong) UILabel *line2;                   //按钮分割线
 @property (nonatomic, strong) UIPickerView *beginPicker;        // 开始选择器
 @property (nonatomic, strong) UIPickerView *endPicker;          // 结束选择器
 
@@ -102,6 +104,9 @@
     //取消
     [self.ldPickerViewBackground addSubview: self.cannelBtn];
     [self.cannelBtn setTitle: self.cannelTitleStr forState: UIControlStateNormal];
+    
+    [self.ldPickerViewBackground addSubview: self.line1];
+    [self.ldPickerViewBackground addSubview: self.line2];
     
     //开始标题
     [self.ldPickerViewBackground addSubview: self.beginTitleLabel];
@@ -497,6 +502,30 @@
     return _cannelBtn;
 }
 
+/** 分割线 */
+- (UILabel *) line1
+{
+    if (_line1 == nil)
+    {
+        _line1 = [[UILabel alloc] init];
+        [_line1 setText: @""];
+        [_line1 setBackgroundColor: [UIColor colorWithRed:229/255.f green:229/255.f blue:229/255.f alpha: 1.f]];
+    }
+    
+    return _line1;
+}
+- (UILabel *) line2
+{
+    if (_line2 == nil)
+    {
+        _line2 = [[UILabel alloc] init];
+        [_line2 setText: @""];
+        [_line2 setBackgroundColor: [UIColor colorWithRed:229/255.f green:229/255.f blue:229/255.f alpha: 1.f]];
+    }
+    
+    return _line2;
+}
+
 /** 开始选择器 */
 - (UIPickerView *) beginPicker
 {
@@ -842,17 +871,27 @@
                                                  (k_PickerItemHeight+2))];
     }
 
-    //确认选择按钮
-    [self.confirmBtn setFrame: CGRectMake(0,
-                                          CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
-                                          CGRectGetWidth(self.ldPickerViewBackground.frame) / 2.f,
-                                          k_ButtonHeight)];
-
     //取消选择按钮
-    [self.cannelBtn setFrame: CGRectMake(CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
+    [self.cannelBtn setFrame: CGRectMake(0,
                                          CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
-                                         CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
+                                         CGRectGetWidth(self.ldPickerViewBackground.frame) / 2.f,
                                          k_ButtonHeight)];
+    
+    //确认选择按钮
+    [self.confirmBtn setFrame: CGRectMake(CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
+                                          CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
+                                          CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
+                                          k_ButtonHeight)];
+    
+    [self.line1 setFrame: CGRectMake(0,
+                                     CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
+                                     CGRectGetWidth(self.ldPickerViewBackground.frame),
+                                     0.5f)];
+    
+    [self.line2 setFrame: CGRectMake(CGRectGetWidth(self.ldPickerViewBackground.frame)/2,
+                                     CGRectGetHeight(self.ldPickerViewBackground.frame) - k_ButtonHeight,
+                                     0.5f,
+                                     k_ButtonHeight)];
 }
 
 @end
