@@ -37,7 +37,8 @@
 //    _ld_DPView.isShow24 = YES;
     _ld_DPView.minTime = @"2000-12-20 12:24:36";
     _ld_DPView.maxTime = @"2030-12-20 12:23:34";
-    _ld_DPView.defaultTime = @"2012-2-12 13:27:24";
+    _ld_DPView.defaultBeginTime = @"2012-2-12 13:27:24";
+    _ld_DPView.defaultEndTime = @"2017-12-2 17:27:24";
     _ld_DPView.beginTitleStr = @"开始日期";
     _ld_DPView.endTitleStr = @"结束日期";
     

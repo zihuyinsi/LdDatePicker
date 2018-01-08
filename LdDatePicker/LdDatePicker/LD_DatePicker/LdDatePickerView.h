@@ -77,8 +77,10 @@ typedef NS_ENUM(NSInteger, DateMode)
 @property (nonatomic, assign) PickerType pickerType;
 /** 日期格式 */
 @property (nonatomic, assign) DateMode dateMode;
-/** 默认时间 yyyy-MM-dd HH:mm:ss */
-@property (nonatomic, copy) NSString *defaultTime;
+/** 默认开始时间 yyyy-MM-dd HH:mm:ss */
+@property (nonatomic, copy) NSString *defaultBeginTime;
+/** 默认结束时间 yyyy-MM-dd HH:mm:ss */
+@property (nonatomic, copy) NSString *defaultEndTime;
 /** 最大时间 yyyy-MM-dd HH:mm:ss */
 @property (nonatomic, copy) NSString *maxTime;
 /** 最小时间 yyyy-MM-dd HH:mm:ss */

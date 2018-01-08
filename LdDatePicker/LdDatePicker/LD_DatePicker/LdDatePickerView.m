@@ -77,7 +77,8 @@
     self.cannelTitleStr = @"取消";
     self.dateMode = DateModeAll;
     
-    self.defaultTime = [[LdDatePickerManager gainDateFormatterWithDateMode: self.dateMode] stringFromDate: [NSDate date]];
+    self.defaultBeginTime = [[LdDatePickerManager gainDateFormatterWithDateMode: self.dateMode] stringFromDate: [NSDate date]];
+    self.defaultEndTime = [[LdDatePickerManager gainDateFormatterWithDateMode: self.dateMode] stringFromDate: [NSDate date]];
 }
 
 /** 视图 */
@@ -114,6 +115,13 @@
 
     //开始选择器
     [self.ldPickerViewBackground addSubview: self.beginPicker];
+    for (UIView *tempview in self.beginPicker.subviews)
+    {
+        if (tempview.frame.size.height < 1)
+        {
+            [tempview setBackgroundColor: [UIColor clearColor]];
+        }
+    }
     
     //添加分割线
     [self.ldPickerViewBackground addSubview: self.beginLineView];
@@ -636,9 +644,15 @@
 }
 
 /** 默认时间 */
-- (void) setDefaultTime:(NSString *)defaultTime
+- (void) setDefaultBeginTime:(NSString *)defaultBeginTime
 {
-    _defaultTime = defaultTime;
+    _defaultBeginTime = defaultBeginTime;
+    
+    [self loadDataWithTime];
+}
+- (void) setDefaultEndTime:(NSString *)defaultEndTime
+{
+    _defaultEndTime = defaultEndTime;
     
     [self loadDataWithTime];
 }
@@ -671,7 +685,7 @@
     if (self.pickerType == PickerTypeDefault)
     {
         //开始选择器
-        [LdDatePickerManager loadPickerDataWithTime: self.defaultTime
+        [LdDatePickerManager loadPickerDataWithTime: self.defaultBeginTime
                                             minTime: self.minTime
                                             maxTime: self.maxTime
                                            dateMode: self.dateMode
@@ -681,7 +695,7 @@
     else if (self.pickerType == PickerTypeBeginEnd)
     {
         //开始选择器
-        [LdDatePickerManager loadPickerDataWithTime: self.defaultTime
+        [LdDatePickerManager loadPickerDataWithTime: self.defaultBeginTime
                                             minTime: self.minTime
                                             maxTime: self.maxTime
                                            dateMode: self.dateMode
@@ -689,7 +703,7 @@
                                          pickerView: self.beginPicker];
         
         //结束选择器
-        [LdDatePickerManager loadPickerDataWithTime: self.defaultTime
+        [LdDatePickerManager loadPickerDataWithTime: self.defaultEndTime
                                             minTime: self.minTime
                                             maxTime: self.maxTime
                                            dateMode: self.dateMode
